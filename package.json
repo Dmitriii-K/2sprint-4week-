@@ -5,14 +5,12 @@
   "repository": "https://github.com/Dmitriii-K/2sprint-4week-.git",
   "author": "Dmitriii-K <dmitriii.kirilenko@yandex.by>",
   "license": "MIT",
-
   "scripts": {
     "watch": "tsc -w",
     "dev": "yarn nodemon --inspect dist/index.js",
     "jest": "jest -i",
     "jest:coverage": "jest -i --coverage"
   },
-
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "date-fns": "^3.6.0",
