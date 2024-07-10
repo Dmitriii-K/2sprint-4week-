@@ -5,6 +5,7 @@ import { jwtService } from "../adapters/jwtToken";
 import { UserInputModel } from "../input-output-types/users-type";
 import { authService } from "./authService";
 import { bcryptService } from "../adapters/bcrypt";
+import { AuthRepository } from "./authRepository";
 
 
 export class AuthController {
@@ -19,13 +20,27 @@ export class AuthController {
       } else {
         const isCorrect = await bcryptService.comparePasswords(req.body.password, authUser?.password);
         if(isCorrect) {
-          const{ token: accessToken } = await jwtService.generateToken(authUser);
-          res.status(200).json({accessToken});
+          const{accessToken, refreshToken} = jwtService.generateToken(authUser);
+          res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true,})
+          .status(200).json({accessToken});
           return;
         } else {
           res.status(401).json({ errorsMessages: [{field: 'password and login', message: 'password or login is wrong'}] });
         }
     };
+    } catch (error) {
+      console.log(error);
+      res.sendStatus(505);
+    }
+  };
+
+  static authRefreshToken = async (req: Request, res: Response) => {
+    try {
+      AuthRepository.insertTokenFromDB(req.cookies.refreshToken);
+      const result = await authService.updateRefreshToken(req.user);
+      const {accessToken, refreshToken} = result;
+        res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true,})
+        .status(200).json({accessToken});
     } catch (error) {
       console.log(error);
       res.sendStatus(505);
@@ -68,6 +83,19 @@ export class AuthController {
       } else {
         res.status(400).json({ errorsMessages: [{ message: 'eanother error', field: 'email',}]
         });
+      }
+    } catch (error) {
+      console.log(error);
+      res.sendStatus(505);
+    }
+  };
+
+  static authLogout = async (req: Request, res: Response) => {
+    try {
+      const result = await authService.authUserLogout(req.cookies.refreshToken);
+      if(result) {
+        res.clearCookie('refreshToken');
+        res.sendStatus(204)
       }
     } catch (error) {
       console.log(error);

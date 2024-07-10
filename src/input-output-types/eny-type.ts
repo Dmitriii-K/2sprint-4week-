@@ -32,3 +32,8 @@ export type Result<T = null> = {
   errorMessage?: OutputErrorsType;
   data: T
 }
+
+export type tokenType = {
+  userId: string;
+  tokens: string[];
+}

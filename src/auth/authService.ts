@@ -1,11 +1,13 @@
 import {randomUUID} from "crypto";
 import {add} from "date-fns"; 
 import { RegistrationUser} from "../input-output-types/auth-type";
-import { UserInputModel } from "../input-output-types/users-type";
+import { UserDBModel, UserInputModel } from "../input-output-types/users-type";
 import { bcryptService } from "../adapters/bcrypt";
 import { sendMailService } from "../adapters/sendEmail";
 import { AuthRepository } from "./authRepository";
 import { WithId } from "mongodb";
+import { jwtService } from "../adapters/jwtToken";
+import { tokenType } from "../input-output-types/eny-type";
 
 export const authService = {
     async checkCredentials(loginOrEmail: string) {
@@ -15,6 +17,15 @@ export const authService = {
         } else {
             return null;
         }
+    },
+    async updateRefreshToken(user:WithId<UserDBModel> ) {
+        const newPairTokens = jwtService.generateToken(user);
+        // const {accessToken, refreshToken} = newPairTokens;
+        if(newPairTokens) {
+            return newPairTokens
+        } else {
+            return null
+        };
     },
     async registerUser(data:UserInputModel) {
  //проверить существует ли уже юзер с таким логином или почтой и если да - не регистрировать ПРОВЕРКА В MIDDLEWARE
@@ -56,5 +67,13 @@ export const authService = {
         ])
         // console.log(result);
         return true;
+    },
+    async authUserLogout(token: string) {
+        const invalidToken = await AuthRepository.insertTokenFromDB(token);
+        if(invalidToken) {
+            return true
+        } else {
+            return false
+        };
     }
 };

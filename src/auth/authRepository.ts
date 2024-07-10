@@ -1,6 +1,7 @@
 import { ObjectId } from "mongodb";
-import { userCollection } from "../db/mongo-db";
+import { tokenCollection, userCollection } from "../db/mongo-db";
 import { RegistrationUser } from "../input-output-types/auth-type";
+import { tokenType } from "../input-output-types/eny-type";
 
 export class AuthRepository {
     static async updateCode(userId: string, newCode: string) {
@@ -27,5 +28,8 @@ export class AuthRepository {
         const result = await userCollection.updateOne({_id}, {$set: {'emailConfirmation.isConfirmed': true}})
         return result.modifiedCount === 1;
     }
-    
+    static async insertTokenFromDB (tokens: tokenType) {
+        const saveResult = await tokenCollection.insertOne(tokens);
+        return saveResult.insertedId.toString();
+    }
 }

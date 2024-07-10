@@ -296,7 +296,26 @@ if(!req.headers.authorization) {
     return;
   };
   const token = req.headers.authorization.split(" ")[1];
-  const payload = await jwtService.getUserIdByToken(token);
+  const payload = jwtService.getUserIdByToken(token);
+  if(!payload) return res.sendStatus(401);
+
+  const user : WithId<UserDBModel> | null= await userCollection.findOne({ _id : new ObjectId(payload.userId)}); 
+  if(user) {
+    req.user = user;
+    next();
+    return
+  } else {
+    return res.status(401).json({});
+  }
+};
+
+export const checkRefreshToken = async (req: Request, res: Response, next: NextFunction) => {
+  if(!req.cookies.refreshToken) {
+    res.sendStatus(401);
+    return
+  };
+  const token = req.cookies.refreshToken;
+  const payload = jwtService.getUserIdByToken(token);
   if(!payload) return res.sendStatus(401);
 
   const user : WithId<UserDBModel> | null= await userCollection.findOne({ _id : new ObjectId(payload.userId)}); 

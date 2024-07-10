@@ -16,12 +16,16 @@ generateToken (user: WithId<UserDBModel>) {
     email: user.email,
     login: user.login,
   };
-  const options = {
-    expiresIn: '1h' 
+  const optionsAccessToken = {
+    expiresIn: '10s' 
+  };
+  const optionsRefreshToken = {
+    expiresIn: '20s' 
   };
   const secretKey = SETTINGS.JWT_SECRET_KEY; 
-  const token:string = jwt.sign(payload, secretKey, options);
-  return {token};
+  const accessToken:string = jwt.sign(payload, secretKey, optionsAccessToken);
+  const refreshToken:string = jwt.sign(payload, secretKey, optionsRefreshToken);
+  return {accessToken, refreshToken};
 },
 getUserIdByToken (token:string) : AccessPayloadType | null {
     try {
