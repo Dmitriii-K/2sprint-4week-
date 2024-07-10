@@ -28,8 +28,11 @@ export class AuthRepository {
         const result = await userCollection.updateOne({_id}, {$set: {'emailConfirmation.isConfirmed': true}})
         return result.modifiedCount === 1;
     }
-    static async insertTokenFromDB (tokens: tokenType) {
-        const saveResult = await tokenCollection.insertOne(tokens);
+    static async findRefreshTokenFromDB (token: string) {
+        return tokenCollection.findOne({token: token});
+    }
+    static async insertTokenFromDB (token: string) {
+        const saveResult = await tokenCollection.insertOne({token});
         return saveResult.insertedId.toString();
     }
 }

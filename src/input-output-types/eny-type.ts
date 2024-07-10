@@ -34,6 +34,5 @@ export type Result<T = null> = {
 }
 
 export type tokenType = {
-  userId: string;
-  tokens: string[];
+  token: string;
 }

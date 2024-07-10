@@ -20,9 +20,9 @@ export const authService = {
     },
     async updateRefreshToken(user:WithId<UserDBModel> ) {
         const newPairTokens = jwtService.generateToken(user);
-        // const {accessToken, refreshToken} = newPairTokens;
+        const {accessToken, refreshToken} = newPairTokens;
         if(newPairTokens) {
-            return newPairTokens
+            return {accessToken, refreshToken}
         } else {
             return null
         };

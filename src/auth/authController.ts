@@ -36,9 +36,16 @@ export class AuthController {
 
   static authRefreshToken = async (req: Request, res: Response) => {
     try {
-      AuthRepository.insertTokenFromDB(req.cookies.refreshToken);
+      const token = await AuthRepository.findRefreshTokenFromDB(req.cookies.refreshToken);
+      if(token) {
+        res.sendStatus(401);
+        return
+      }
+      if(!token) {
+        AuthRepository.insertTokenFromDB(req.cookies.refreshToken)
+      };
       const result = await authService.updateRefreshToken(req.user);
-      const {accessToken, refreshToken} = result;
+      const {accessToken, refreshToken} = result!;
         res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true,})
         .status(200).json({accessToken});
     } catch (error) {
@@ -92,6 +99,11 @@ export class AuthController {
 
   static authLogout = async (req: Request, res: Response) => {
     try {
+      const token = await AuthRepository.findRefreshTokenFromDB(req.cookies.refreshToken)
+      if(token) {
+        res.sendStatus(401)
+        return
+      }
       const result = await authService.authUserLogout(req.cookies.refreshToken);
       if(result) {
         res.clearCookie('refreshToken');
