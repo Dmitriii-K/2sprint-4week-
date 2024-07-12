@@ -1,12 +1,12 @@
 import { ObjectId } from "mongodb";
 
 export type CommentInputModel = {
-    content:	string;
+  content:	string;
 };
 
 export type CommentatorInfo = {
-    userId:	string;
-    userLogin:	string;
+  userId:	string;
+  userLogin:	string;
 };
 
 export type CommentViewModel = {
@@ -17,11 +17,11 @@ export type CommentViewModel = {
 };
 
 export type CommentDBType = {
-    _id?: ObjectId;
-    postId?: string;
-    content:	string;
-    createdAt:	string;
-    commentatorInfo: CommentatorInfo;
+  _id?: ObjectId;
+  postId?: string;
+  content:	string;
+  createdAt:	string;
+  commentatorInfo: CommentatorInfo;
 }
 
 export type PaginatorCommentViewModelDB = {
@@ -32,8 +32,8 @@ export type PaginatorCommentViewModelDB = {
   items: CommentViewModel[];
 };
 export type TypeCommentPagination = {
-    sortBy: string;
-    sortDirection: string;
-    pageNumber: number;
-    pageSize: number;
+  sortBy: string;
+  sortDirection: string;
+  pageNumber: number;
+  pageSize: number;
 };
